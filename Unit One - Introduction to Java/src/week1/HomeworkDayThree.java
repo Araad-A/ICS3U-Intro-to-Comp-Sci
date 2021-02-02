@@ -6,7 +6,9 @@ package week1;
 public class HomeworkDayThree {
 
     public static void main(String[] args) {
+        
         //Code underneath calculates area of a circle. 
+
         double r = 5;
         double areaOfCircle = (Math.pow(r, 2)*Math.PI);
 
@@ -14,6 +16,7 @@ public class HomeworkDayThree {
         System.out.println(areaOfCircle);
     
         //Code underneath calculates volume of a sphere. 
+
         double volumeOfSphere = (Math.pow(r, 3)*4/3*Math.PI);
         
         System.out.println(volumeOfSphere);
@@ -70,9 +73,6 @@ public class HomeworkDayThree {
         double xMinus = ((-b1 - Math.sqrt(Math.pow(b1, 2)-(4*a1*c1)))/(2*a1));
 
         System.out.println(xPlus + "  and  " + xMinus);
-    
-    
-    
-    
     }
+
 }
