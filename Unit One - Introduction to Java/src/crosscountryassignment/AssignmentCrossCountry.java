@@ -1,4 +1,4 @@
-package crosscountryassignment;
+package crosscountryassignment; 
 
 import java.util.Scanner;
 
