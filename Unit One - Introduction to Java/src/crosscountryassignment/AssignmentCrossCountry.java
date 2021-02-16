@@ -37,16 +37,21 @@ public class AssignmentCrossCountry {
         double timeInSecondsThree = convertStringToDouble(raceCompletionTime);
 
         double splitTwoSeconds = getSplitTimeSeconds(timeInSecondsOne, timeInSecondsTwo);
+        
         double splitThreeSeconds = getSplitTimeSeconds(timeInSecondsTwo, timeInSecondsThree);
         
         String splitOneFinal = mileOneTime;
+        
         String splitTwoFinal = getSplitInTimeString(splitTwoSeconds);
+        
         String splitThreeFinal = getSplitInTimeString(splitThreeSeconds);
 
         System.out.print("\n\nCongratulations" + " " + runnerFirstName + " " + runnerLastName + "" + ", this is your summary:");
 
         System.out.println("\nYour split one time is: " + splitOneFinal);
+        
         System.out.println("Your split two time is: " + splitTwoFinal);
+        
         System.out.println("Your split three time is: " + splitThreeFinal);
 
     }
@@ -58,8 +63,11 @@ public class AssignmentCrossCountry {
 
         private static double convertStringToDouble(String mileTimes) {
             int colon = mileTimes.indexOf(":");
+            
             int minutesAsSeconds = Integer.parseInt(mileTimes.substring(0,colon)) * 60;
+            
             double seconds = Double.parseDouble(mileTimes.substring(colon+1));
+            
             return minutesAsSeconds + seconds;
         }
 
@@ -81,7 +89,9 @@ public class AssignmentCrossCountry {
         
         private static String getSplitInTimeString(double splitTime){
             int splitMinutes = (int)(splitTime / 60);
+            
             double splitSecondsMilli = (splitTime - (splitMinutes * 60));
+            
             return  String.format("%d:%06.3f",splitMinutes,splitSecondsMilli);
         }
 }
