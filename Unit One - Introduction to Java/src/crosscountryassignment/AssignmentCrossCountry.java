@@ -63,11 +63,8 @@ public class AssignmentCrossCountry {
 
         private static double convertStringToDouble(String mileTimes) {
             int colon = mileTimes.indexOf(":");
-            
             int minutesAsSeconds = Integer.parseInt(mileTimes.substring(0,colon)) * 60;
-            
             double seconds = Double.parseDouble(mileTimes.substring(colon+1));
-            
             return minutesAsSeconds + seconds;
         }
 
@@ -88,9 +85,7 @@ public class AssignmentCrossCountry {
         
         private static String getSplitInTimeString(double splitTime){
             int splitMinutes = (int)(splitTime / 60);
-            
             double splitSecondsMilli = (splitTime - (splitMinutes * 60));
-            
             return  String.format("%d:%06.3f",splitMinutes,splitSecondsMilli);
         }
 }
