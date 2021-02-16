@@ -56,7 +56,7 @@ public class AssignmentCrossCountry {
 
     }
         /**
-         * string to usable double for calculations.
+         * string to double to use for calculations.
         * @param mileTimes string inputed by the user in mm:ss.sss format.
         * @return double number in seconds and milliseconds (calculations).
         */
@@ -82,7 +82,6 @@ public class AssignmentCrossCountry {
         }
 
         /**
-        * 
         * @param splitTime the time in seconds between two certian splits
         * @return a string in the format of mm:ss.sss that is then displayed
         */
