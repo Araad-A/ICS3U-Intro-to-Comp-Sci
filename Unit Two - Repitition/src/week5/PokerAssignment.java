@@ -30,26 +30,36 @@ public class PokerAssignment {
     private static void playPoker(int startingChips, Scanner in) {
         String card = getCard();
         
-        String playerHand = dealCards();
-        String dealerHand = dealCards();
-        System.out.println("\nPlayer's hand: " + playerHand);
-        System.out.println("Dealer's hand: ????????");
-
-        System.out.println("Total chips: " + startingChips);
+        System.out.println("\nStarting chips: " + startingChips);
 
         int startingBet = getWager(in);
         int chipsAfterStartingBet = chipsAfterBet(startingChips, startingBet);
         int chipsAllInCheck = chipsAllCheck(chipsAfterStartingBet, startingBet, startingChips, in);
         int chipsAfterAllInCheck = chipsAfterBet(startingChips, chipsAllInCheck);
 
-        System.out.println("\nTotal chips: " + chipsAfterAllInCheck);
-        System.out.println("Pot: " + chipsAllInCheck);
+        String playWager = checkPairBet(in);
+        int askPairWagerValue = checkPairBetPlay(playWager, in);
+
+        int chipsAfterPair = chipsAfterBet(chipsAfterAllInCheck, askPairWagerValue);
+        int chipsAllInPairBet = chipsAllCheck(chipsAfterPair, askPairWagerValue, chipsAfterAllInCheck, in);
+        int chipsAllInPairBetCheck = chipsAfterBet(chipsAfterAllInCheck, chipsAllInPairBet);
+
+        int pairBetPot = getPotVal(startingBet, askPairWagerValue);
+    
+        String writePairBetPotAndChips = displayPotAndChips(chipsAllInPairBetCheck, pairBetPot);
+        System.out.println(writePairBetPotAndChips);
+
+        String playerHand = dealCards();
+        String dealerHand = dealCards();
+        String dealerHandMystery = "??????????";
+        String foldBeginningAnswer = "";
+        String beginningCards = showCards(dealerHandMystery, playerHand, foldBeginningAnswer, "");
+        System.out.println(beginningCards);
 
         String cardSplit  = splitCardStr(1, playerHand);
         String cardMidSplit = splitCardStr(2, playerHand);
         String cardLastSplit = splitCardStr(3, playerHand);
 
-        
         String cardDealerSplit = splitCardStr(1, dealerHand);   
         String cardDealerMid = splitCardStr(2, dealerHand);
         String cardDealerLast = splitCardStr(3, dealerHand);
@@ -71,36 +81,113 @@ public class PokerAssignment {
         int cardDealerNumThree = cardInNum(cardDealerLast);
 
         int playerComboCheck = checkForCombos(cardNumOnePlayer, cardNumTwoPlayer, cardNumThreePlayer, cardSuitPlayer, cardSuitPlayerMid, cardSuitPlayerLast);
-        System.out.println(playerComboCheck);
+        System.out.println();
 
         int dealerComboCheck = checkForCombos(cardDealerNumOne, cardDealerNumTwo, cardDealerNumThree, cardSuitDealer, cardSuitDealerMid, cardSuitDealerLast);
 
         String askForFold = checkFold(in);
         String checkFold = checkForFoldPlay(playerComboCheck, askForFold, in);
         String playAgain = checkForPlayAgain(in, chipsAfterAllInCheck, checkFold);
-        String askPlayBet = checkPlayBetPair(in, playerComboCheck);
-        int checkPairPlayBet = checkPairBetPlay(askPlayBet, in);
-        
 
+        int askPlayBetWager = getPlayWager(startingBet, in);
+
+        int chipsAfterPlayBet = chipsAfterBet(chipsAfterAllInCheck, askPlayBetWager);
+        int chipsAllInPlayBet = chipsAllCheck(chipsAfterPlayBet, askPlayBetWager, chipsAfterAllInCheck, in);
+        int chipsAllInPlayBetCheck = chipsAfterBet(chipsAfterAllInCheck, chipsAllInPlayBet);
+
+        int playBetPotVal = getPotVal(chipsAllInPlayBetCheck, askPlayBetWager);
+        String writePlayBetPotAndChips = displayPotAndChips(chipsAllInPairBetCheck, playBetPotVal);
+
+        String displayFinalCards = showCards(dealerHand, playerHand, checkFold, writePlayBetPotAndChips);
+        System.out.println(displayFinalCards);
+
+        String checkForWinner = getWinner(cardDealerNumOne, cardDealerNumTwo, cardDealerNumThree, cardNumOnePlayer, cardNumTwoPlayer, cardNumThreePlayer, playerComboCheck, dealerComboCheck, playBetPotVal, askPlayBetWager, startingBet, askPairWagerValue); 
+        System.out.println(checkForWinner);
+
+        String checkPlayAgain = askForPlayAgain(in);
+        String playAgainEnd = checkForPlayAgain(in, chipsAllInPlayBetCheck, checkPlayAgain);
     }
 
-    private static int checkPairBetPlay(String playBetAns, Scanner in){
-        if (playBetAns == "y"){
-            return askPlayBetValue(in);
-        }else if (playBetAns == "n"){
-            return 0;
-        }else if (playBetAns == ""){
+    private static int getPlayWager(int startingBet, Scanner in) {
+        int bet = 0;
+        System.out.print("Please enter a valid play bet(must be the same as starting bet): ");
+        String betInText = in.nextLine();
+        boolean validInput = false;
+        while(!validInput){
+        try {
+          bet = Integer.parseInt(betInText);
+            if (bet == startingBet)
+                validInput = true;
+            else {
+                System.out.print("Please enter a valid play bet(must be the same as starting bet): ");
+                betInText = in.nextLine();
+            }
+        } catch (NumberFormatException ex){
+            System.out.print("Please enter a valid play bet(must be the same as starting bet): ");
+            betInText = in.nextLine();
+        }
+        }
+        return bet;
+    }
+
+    private static String getWinner(int dealerCardNum, int dealerCardNumTwo, int dealerCardNumThree, int playerCardNum,
+            int playerCardNumTwo, int playerCardNumThree, int playerCombo, int dealerCombo, int pot, int playBet, int startingBet, int pairBet) {
+                int playerMax = (Math.max(playerCardNum, Math.max(playerCardNumTwo, playerCardNumThree)));
+                int dealerMax = (Math.max(dealerCardNum, Math.max(dealerCardNumTwo, dealerCardNumThree)));
+                if (playerCombo > dealerCombo){
+            System.out.println("\nYOU WIN!");
+            return "";
+        }else if (playerCombo < dealerCombo){
+            System.out.println("\nYOU LOSE!");
+            return "";
+        }else if (playerCombo == dealerCombo && playerMax > dealerMax){
+            System.out.println("\nYOU WIN!");
+            return "";
+        }else if (playerCombo == dealerCombo && dealerMax > playerMax){
+            System.out.println("\nYOU LOSE!");
+            return "";
+        }else if (dealerCombo == 0 && dealerMax <= 11){
+            System.out.println("\nYOU WILL LOSE YOUR STARTING BET BUT KEEP YOUR PLAY BET!");
+            return "";
+        }else return "";
+
+        }
+    
+
+    private static String showCards(String dealerHand, String hand, String foldAns, String displayPotAndChips) {
+        if (foldAns == ""){
+            System.out.println(displayPotAndChips);
+            String writeDealerHand = ("\nDealer's hand: " + dealerHand);
+            String writePlayerHand = ("\nPlayer's hand: " + hand);
+            return writePlayerHand + writeDealerHand;
+        }else return "";
+    }
+
+    private static int getPotVal(int startingBet, int playBet){
+        return startingBet + playBet;
+    }
+
+    private static String displayPotAndChips(int chips, int pot){
+        String displayPot = ("\nPot: " + pot);
+        String displayChips = ("\nTotal chips: " + chips);
+        return displayChips + displayPot;
+    }
+
+    private static int checkPairBetPlay(String pairBetAns, Scanner in){
+        if (pairBetAns == ""){
             return 0;
         }
-        return 0;
+        char temp = pairBetAns.charAt(0);
+        if (temp == 'y'){
+            return askPairBetValue(in);
+        }else return 0;
     }
 
     private static int chipsAllCheck(int chipsAfterBet, int bet, int chips, Scanner in) {
         if (chipsAfterBet < 0 && bet > chips){
             allInCheck(in);
             return chips;
-        }
-        return bet;
+        }else return bet;
     }
 
     private static String allInCheck(Scanner in){
@@ -111,26 +198,19 @@ public class PokerAssignment {
     }
     return temp;
     }
-
-    private static String checkPlayBetPair(Scanner in, int combo) {
-        if (combo >= PAIR){
-            return checkPlayBet(in);
-        }
-        return "";
-    }
     
-    private static String checkPlayBet(Scanner in) {
-        String playBet = "";
-        while (!(playBet.equalsIgnoreCase("y") || playBet.equalsIgnoreCase("n"))) {
-        System.out.print("Would you like to place a play bet(you have a pair or higher)(y/n): ");
-        playBet = in.nextLine().toLowerCase();
+    private static String checkPairBet(Scanner in) {
+        String pairBet = "";
+        while (!(pairBet.equalsIgnoreCase("y") || pairBet.equalsIgnoreCase("n"))) {
+        System.out.print("Would you like to place a pair plus bet(you are betting that you have a pair or higher)(y/n): ");
+        pairBet = in.nextLine().toLowerCase();
     }
-    return playBet;
+    return pairBet;
     }
 
-    private static int askPlayBetValue(Scanner in) {
+    private static int askPairBetValue(Scanner in) {
         int bet = 0;
-        System.out.print("Please enter a valid play bet(50-100): ");
+        System.out.print("Please enter a valid pair plus bet(50-100): ");
         String betInText = in.nextLine();
         boolean validInput = false;
         while(!validInput){
@@ -139,11 +219,11 @@ public class PokerAssignment {
             if (bet >= 50 && bet <= 100)
                 validInput = true;
             else {
-                System.out.print("Please enter a valid play bet(50-100): ");
+                System.out.print("Please enter a valid pair plus bet(50-100): ");
                 betInText = in.nextLine();
             }
         } catch (NumberFormatException ex){
-            System.out.print("Please enter a valid play bet(50-100): ");
+            System.out.print("Please enter a valid pair plus bet(50-100): ");
             betInText = in.nextLine();
         }
         }
@@ -151,13 +231,16 @@ public class PokerAssignment {
     }
 
     private static String checkForPlayAgain(Scanner in, int remainChips, String playAgainAns){
+        if (playAgainAns == ""){
+            return "";
+        }
         char temp = playAgainAns.charAt(0);
         if (temp == 'y'){
             checkBankruptcy(in, remainChips);
         }else if (temp == 'n'){
+            System.exit(0);
             return "";
-        }
-        return "";
+        }return playAgainAns;
     }
     
     private static String checkBankruptcy(Scanner in, int chips){
@@ -173,17 +256,16 @@ public class PokerAssignment {
     private static String checkForFoldPlay(int combo, String foldAnswer, Scanner in) {
         char temp = foldAnswer.charAt(0);
         if (temp == 'y'){
-            askForPlayAgain(in);
+            return askForPlayAgain(in);
         }else if (temp == 'n'){
-            return foldAnswer;
-        }
-         return foldAnswer;
+            return "";
+        }else return "";
     }
 
     private static String checkFold(Scanner in) {
         String fold = "";
         while (!(fold.equalsIgnoreCase("y") || fold.equalsIgnoreCase("n"))) {
-        System.out.print("Would you like to fold(y/n): ");
+        System.out.print("Would you like to fold(if you continue, you must place another bet)(y/n): ");
         fold = in.nextLine().toLowerCase();
     }
     return fold;
@@ -265,7 +347,7 @@ public class PokerAssignment {
 
     private static int getWager(Scanner in) {
         int bet = 0;
-        System.out.print("Please enter a valid bet(50-100): ");
+        System.out.print("\nPlease enter a valid bet(50-100): ");
         String betInText = in.nextLine();
         boolean validInput = false;
         while(!validInput){
@@ -274,11 +356,11 @@ public class PokerAssignment {
             if (bet >= 50 && bet <= 100)
                 validInput = true;
             else {
-                System.out.print("Please enter a valid bet(50-100): ");
+                System.out.print("\nPlease enter a valid bet(50-100): ");
                 betInText = in.nextLine();
             }
         } catch (NumberFormatException ex){
-            System.out.print("Please enter a valid bet(50-100): ");
+            System.out.print("\nPlease enter a valid bet(50-100): ");
             betInText = in.nextLine();
         }
         }
